@@ -12,13 +12,13 @@ class App extends React.Component {
 
   componentDidMount() {
     while (!this.fromUser) {
-      let fromUserInput = prompt('tum kaun ho?')
+      let fromUserInput = prompt('Who are you?')
       this.fromUser = fromUserInput;
       console.log(this.fromUser);
     }
 
     while (!this.toUser) {
-      let toUserInput = prompt('kisko bhej rahe ho?')
+      let toUserInput = prompt('To whom are you sending?')
       this.toUser = toUserInput;
       console.log(this.toUser);
     }
