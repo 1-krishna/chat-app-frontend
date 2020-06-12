@@ -44,14 +44,14 @@ class App extends React.Component {
     const { currentMessage } = this.state;
 
     let msgObject = {
-      type: 'outgoing', // for current user
+      type: 'outgoing', // for sender
       data: currentMessage,
       fromUser: this.fromUser,
       toUser: this.toUser
     }
 
     let msgObjectToBeSent = {
-      type: 'incoming', // for other user
+      type: 'incoming', // for receiver
       data: currentMessage,
       fromUser: this.fromUser,
       toUser: this.toUser
