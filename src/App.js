@@ -1,12 +1,15 @@
 import React from 'react';
 import './App.css';
-import ChatWindow from './components/chat-window/chat-window.component';
+import Home from './pages/home/home.component';
+import { Switch, Route } from 'react-router-dom';
 
 class App extends React.Component {
 
   render() {
     return (
-      <ChatWindow />
+      <Switch>
+        <Route path='/' exact component={Home} />
+      </Switch>
     );
   }
 }

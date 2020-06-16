@@ -1,6 +1,6 @@
 import React from 'react';
 import io from 'socket.io-client';
-import { Button, Comment, Form, Grid, Card } from 'semantic-ui-react'
+import { Button, Comment, Form, Grid, Card, Segment } from 'semantic-ui-react'
 
 class ChatWindow extends React.Component {
     state = {
@@ -67,73 +67,62 @@ class ChatWindow extends React.Component {
     render() {
         return (
 
-            <Card centered raised fluid>
-                <Card.Content>
-                    <Grid centered columns={2}>
-                        <Grid.Column>
-                            <Comment.Group>
-                                <Card.Header as='h3'>
-                                    Chat window of {this.state.fromUser}
-                                </Card.Header>
-                                <Grid>
-                                    {
-                                        this.state.messages.map((message, index) => {
-                                            if (message.type === 'incoming') {
-                                                return (
-                                                    <Grid.Row key={index}>
-                                                        <Grid.Column floated='left' width={10}>
-                                                            <Comment>
-                                                                <Comment.Avatar src='../images/avatar/matt.jpg' />
-                                                                <Comment.Content>
-                                                                    <Comment.Author as='a'>{message.fromUser}</Comment.Author>
-                                                                    <Comment.Metadata>
-                                                                        <div>12 baje</div>
-                                                                    </Comment.Metadata>
-                                                                    <Comment.Text>{message.data}</Comment.Text>
-                                                                </Comment.Content>
-                                                            </Comment>
-                                                        </Grid.Column>
-                                                    </Grid.Row>
-                                                )
-                                            } else {
-                                                return (
-                                                    <Grid.Row key={index}>
-                                                        <Grid.Column textAlign="right" floated='right' width={10}>
-                                                            <Comment>
-                                                                <Comment.Content>
-                                                                    <Comment.Author as='a'>You</Comment.Author>
-                                                                    <Comment.Metadata>
-                                                                        <div>1 baje</div>
-                                                                    </Comment.Metadata>
-                                                                    <Comment.Text>{message.data}</Comment.Text>
-                                                                </Comment.Content>
-                                                            </Comment>
-                                                        </Grid.Column>
-                                                    </Grid.Row>
-                                                )
-                                            }
-                                        })
-                                    }
-                                </Grid>
-                                <Form reply onSubmit={this.handleSubmit}>
-                                    <Grid>
-                                        <Grid.Column floated="left" width={12} verticalAlign="bottom">
-                                            <Form.Field>
-                                                <label>Message</label>
-                                                <input placeholder="write your message" type='text' name='currentMessage' value={this.state.currentMessage} onChange={this.handleChange} />
-                                            </Form.Field>
+            <Card width="800px" centered raised>
+                <Card.Header as='h3'>
+                    Chat window of {this.state.fromUser}
+                </Card.Header>
+                <Grid>
+                    {
+                        this.state.messages.map((message, index) => {
+                            if (message.type === 'incoming') {
+                                return (
+                                    <Grid.Row>
+                                        <Grid.Column floated='left' width={12}>
+                                            <Comment>
+                                                <Comment.Avatar src='../images/avatar/matt.jpg' />
+                                                <Comment.Content>
+                                                    <Comment.Author as='a'>{message.fromUser}</Comment.Author>
+                                                    <Comment.Metadata>
+                                                        <div>12 baje</div>
+                                                    </Comment.Metadata>
+                                                    <Comment.Text>{message.data}</Comment.Text>
+                                                </Comment.Content>
+                                            </Comment>
                                         </Grid.Column>
-                                        <Grid.Column floated="right" width={4} verticalAlign="bottom">
-                                            <Form.Field>
-                                                <Button content='Reply' labelPosition='left' icon='send' primary />
-                                            </Form.Field>
+                                        <Grid.Column floated='right' width={4}><Segment></Segment></Grid.Column>
+                                    </Grid.Row>
+                                )
+                            } else {
+                                return (
+                                    <Grid.Row>
+                                        <Grid.Column floated='left' width={4}><Segment></Segment></Grid.Column>
+                                        <Grid.Column textAlign="right" floated='right' width={12}>
+                                            <Comment>
+                                                <Comment.Content>
+                                                    <Comment.Author as='a'>You</Comment.Author>
+                                                    <Comment.Metadata>
+                                                        <div>1 baje</div>
+                                                    </Comment.Metadata>
+                                                    <Comment.Text>{message.data}</Comment.Text>
+                                                </Comment.Content>
+                                            </Comment>
                                         </Grid.Column>
-                                    </Grid>
-                                </Form>
-                            </Comment.Group>
+                                    </Grid.Row>
+                                )
+                            }
+                        })
+                    }
+                    <Grid.Row>
+                        <Grid.Column width={16}>
+                            <Form reply onSubmit={this.handleSubmit}>
+                                <Form.Group widths='equal'>
+                                    <Form.Input placeholder="write your message" type='text' label="Message" name='currentMessage' value={this.state.currentMessage} onChange={this.handleChange} />
+                                    <Button content='Reply' labelPosition='left' icon='send' primary />
+                                </Form.Group>
+                            </Form>
                         </Grid.Column>
-                    </Grid>
-                </Card.Content>
+                    </Grid.Row>
+                </Grid>
             </Card>
         );
     }
