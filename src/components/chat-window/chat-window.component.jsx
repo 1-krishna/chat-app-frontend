@@ -1,25 +1,29 @@
 import React from 'react';
 import io from 'socket.io-client';
 import { Comment, Form, Grid, Segment } from 'semantic-ui-react'
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import { selectMessages } from "../../redux/messages/messages.selectors";
+import { setMessages } from "../../redux/messages/messages.actions";
+
 
 class ChatWindow extends React.Component {
     state = {
         messages: [],
         currentMessage: '',
-        fromUser: ''
+        fromUser: '',
+        toUser: ''
     }
 
     componentDidMount() {
         while (!this.fromUser) {
             let fromUserInput = prompt('Who are you?')
             this.fromUser = fromUserInput;
-            console.log(this.fromUser);
         }
 
         while (!this.toUser) {
             let toUserInput = prompt('To whom are you sending?')
             this.toUser = toUserInput;
-            console.log(this.toUser);
         }
         this.socket = io('http://localhost:4000');
         this.socket.on(`${this.fromUser}`, incomingMessage => {
@@ -29,7 +33,8 @@ class ChatWindow extends React.Component {
             }, () => this.scrollToBottom())
         })
         this.setState({
-            fromUser: this.fromUser
+            fromUser: this.fromUser,
+            toUser: this.toUser
         })
     }
 
@@ -61,7 +66,10 @@ class ChatWindow extends React.Component {
             currentMessage: '',
             messages: [...this.state.messages, msgObject],
             fromUser: this.fromUser
-        }, () => this.scrollToBottom())
+        }, () => {
+            this.props.setMessages(this.state.messages)
+            this.scrollToBottom()
+        })
     }
 
     scrollToBottom = () => {
@@ -72,7 +80,7 @@ class ChatWindow extends React.Component {
         return (
             <div>
                 <h3>
-                    Chat window of {this.state.fromUser}
+                    Chat window of "{this.state.fromUser}" sending to "{this.state.toUser}"
                 </h3>
                 <Segment style={{ overflow: 'auto', height: 350 }}>
                     <Grid>
@@ -80,7 +88,7 @@ class ChatWindow extends React.Component {
                             this.state.messages.map((message, index) => {
                                 if (message.type === 'incoming') {
                                     return (
-                                        <Grid.Row>
+                                        <Grid.Row key={index}>
                                             <Grid.Column floated='left' width={12}>
                                                 <Comment>
                                                     <Comment.Avatar src='../images/avatar/matt.jpg' />
@@ -97,7 +105,7 @@ class ChatWindow extends React.Component {
                                     )
                                 } else {
                                     return (
-                                        <Grid.Row>
+                                        <Grid.Row key={index}>
                                             <Grid.Column textAlign="right" floated='right' width={12}>
                                                 <Comment>
                                                     <Comment.Content>
@@ -138,4 +146,12 @@ class ChatWindow extends React.Component {
     }
 }
 
-export default ChatWindow;
+const mapStateToProps = createStructuredSelector({
+    messages: selectMessages
+})
+
+const mapDispatchToProps = dispatch => ({
+    setMessages: messages => dispatch(setMessages(messages))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatWindow);
