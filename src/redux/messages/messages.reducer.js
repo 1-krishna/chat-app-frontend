@@ -1,7 +1,7 @@
 import MessagesActionTypes from "./messages.types";
 
 const INITIAL_STATE = {
-    messages: null
+    messages: []
 }
 
 const messagesReducer = (state = INITIAL_STATE, action) => {

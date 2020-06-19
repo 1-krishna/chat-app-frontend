@@ -9,10 +9,13 @@ import { setMessages } from "../../redux/messages/messages.actions";
 
 class ChatWindow extends React.Component {
     state = {
-        messages: [],
         currentMessage: '',
         fromUser: '',
         toUser: ''
+    }
+
+    componentDidUpdate() {
+        this.scrollToBottom()
     }
 
     componentDidMount() {
@@ -28,9 +31,7 @@ class ChatWindow extends React.Component {
         this.socket = io('http://localhost:4000');
         this.socket.on(`${this.fromUser}`, incomingMessage => {
             console.log(incomingMessage)
-            this.setState({
-                messages: [...this.state.messages, incomingMessage]
-            }, () => this.scrollToBottom())
+            this.props.setMessages([...this.props.messages, incomingMessage])
         })
         this.setState({
             fromUser: this.fromUser,
@@ -47,29 +48,34 @@ class ChatWindow extends React.Component {
         event.preventDefault();
         const { currentMessage } = this.state;
 
+        if (!currentMessage) return
+        let samay = new Date();
+
         let msgObject = {
             type: 'outgoing', // for sender
             data: currentMessage,
             fromUser: this.fromUser,
-            toUser: this.toUser
+            toUser: this.toUser,
+            time: samay
         }
 
         let msgObjectToBeSent = {
             type: 'incoming', // for receiver
             data: currentMessage,
             fromUser: this.fromUser,
-            toUser: this.toUser
+            toUser: this.toUser,
+            time: samay
         }
 
+        console.log(msgObjectToBeSent)
         this.socket.emit('messageSent', msgObjectToBeSent);
+
         this.setState({
-            currentMessage: '',
-            messages: [...this.state.messages, msgObject],
-            fromUser: this.fromUser
+            currentMessage: ''
         }, () => {
-            this.props.setMessages(this.state.messages)
-            this.scrollToBottom()
+            this.props.setMessages([...this.props.messages, msgObject])
         })
+
     }
 
     scrollToBottom = () => {
@@ -77,6 +83,7 @@ class ChatWindow extends React.Component {
     }
 
     render() {
+        const { messages } = this.props;
         return (
             <div>
                 <h3>
@@ -85,7 +92,7 @@ class ChatWindow extends React.Component {
                 <Segment style={{ overflow: 'auto', height: 350 }}>
                     <Grid>
                         {
-                            this.state.messages.map((message, index) => {
+                            messages.map((message, index) => {
                                 if (message.type === 'incoming') {
                                     return (
                                         <Grid.Row key={index}>
@@ -95,9 +102,9 @@ class ChatWindow extends React.Component {
                                                     <Comment.Content>
                                                         <Comment.Author as='a'>{message.fromUser}</Comment.Author>
                                                         <Comment.Metadata>
-                                                            <div>12 baje</div>
+                                                            <div style={{ color: 'red' }}>{new Date(Date.parse(message.time)).toLocaleTimeString()}</div>
                                                         </Comment.Metadata>
-                                                        <Comment.Text>{message.data}</Comment.Text>
+                                                        <Comment.Text style={{ wordWrap: 'break-word' }}>{message.data}</Comment.Text>
                                                     </Comment.Content>
                                                 </Comment>
                                             </Grid.Column>
@@ -111,9 +118,9 @@ class ChatWindow extends React.Component {
                                                     <Comment.Content>
                                                         <Comment.Author as='a'>You</Comment.Author>
                                                         <Comment.Metadata>
-                                                            <div>1 baje</div>
+                                                            <div style={{ color: '#006400' }}>{new Date(Date.parse(message.time)).toLocaleTimeString()}</div>
                                                         </Comment.Metadata>
-                                                        <Comment.Text>{message.data}</Comment.Text>
+                                                        <Comment.Text style={{ wordWrap: 'break-word' }}>{message.data}</Comment.Text>
                                                     </Comment.Content>
                                                 </Comment>
                                             </Grid.Column>
