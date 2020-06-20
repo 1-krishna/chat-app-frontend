@@ -2,16 +2,15 @@ import React from 'react';
 import io from 'socket.io-client';
 import { Comment, Form, Grid, Segment } from 'semantic-ui-react'
 import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
-import { selectMessages } from "../../redux/messages/messages.selectors";
+import { selectOpenUserMessages, selectMessages } from "../../redux/messages/messages.selectors";
+import { setCurrentlyOpenUser, setLoggedUser } from "../../redux/details/details.actions";
+import { selectCurrentlyOpenUser, selectLoggedUser } from "../../redux/details/details.selectors";
 import { setMessages } from "../../redux/messages/messages.actions";
 
 
 class ChatWindow extends React.Component {
     state = {
-        currentMessage: '',
-        fromUser: '',
-        toUser: ''
+        currentMessage: ''
     }
 
     componentDidUpdate() {
@@ -31,12 +30,10 @@ class ChatWindow extends React.Component {
         this.socket = io('http://localhost:4000');
         this.socket.on(`${this.fromUser}`, incomingMessage => {
             console.log(incomingMessage)
-            this.props.setMessages([...this.props.messages, incomingMessage])
+            this.props.setMessages([...this.props.allMessages, incomingMessage])
         })
-        this.setState({
-            fromUser: this.fromUser,
-            toUser: this.toUser
-        })
+        this.props.setLoggedUser(this.fromUser)
+        this.props.setCurrentlyOpenUser(this.toUser);
     }
 
     handleChange = event => {
@@ -54,16 +51,16 @@ class ChatWindow extends React.Component {
         let msgObject = {
             type: 'outgoing', // for sender
             data: currentMessage,
-            fromUser: this.fromUser,
-            toUser: this.toUser,
+            fromUser: this.props.fromUser,
+            toUser: this.props.toUser,
             time: samay
         }
 
         let msgObjectToBeSent = {
             type: 'incoming', // for receiver
             data: currentMessage,
-            fromUser: this.fromUser,
-            toUser: this.toUser,
+            fromUser: this.props.fromUser,
+            toUser: this.props.toUser,
             time: samay
         }
 
@@ -73,7 +70,7 @@ class ChatWindow extends React.Component {
         this.setState({
             currentMessage: ''
         }, () => {
-            this.props.setMessages([...this.props.messages, msgObject])
+            this.props.setMessages([...this.props.allMessages, msgObject])
         })
 
     }
@@ -83,11 +80,11 @@ class ChatWindow extends React.Component {
     }
 
     render() {
-        const { messages } = this.props;
+        const messages = this.props.messages(this.props.toUser);
         return (
             <div>
                 <h3>
-                    Chat window of "{this.state.fromUser}" sending to "{this.state.toUser}"
+                    Chat window of "{this.props.fromUser}" sending to "{this.props.toUser}"
                 </h3>
                 <Segment style={{ overflow: 'auto', height: 350 }}>
                     <Grid>
@@ -153,12 +150,18 @@ class ChatWindow extends React.Component {
     }
 }
 
-const mapStateToProps = createStructuredSelector({
-    messages: selectMessages
+const mapStateToProps = (state) => ({
+    allMessages: selectMessages(state),
+    fromUser: selectLoggedUser(state),
+    toUser: selectCurrentlyOpenUser(state),
+    messages: openUser => selectOpenUserMessages(openUser)(state),
+
 })
 
 const mapDispatchToProps = dispatch => ({
-    setMessages: messages => dispatch(setMessages(messages))
+    setMessages: messages => dispatch(setMessages(messages)),
+    setLoggedUser: user => dispatch(setLoggedUser(user)),
+    setCurrentlyOpenUser: user => dispatch(setCurrentlyOpenUser(user))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatWindow);

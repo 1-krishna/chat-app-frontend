@@ -5,7 +5,7 @@ const INITIAL_STATE = {
     currentlyOpenUser: null
 }
 
-const freqContactsReducer = (state = INITIAL_STATE, action) => {
+const detailsReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case DetailsActionTypes.SET_LOGGED_USER:
             return {
@@ -22,4 +22,4 @@ const freqContactsReducer = (state = INITIAL_STATE, action) => {
     }
 }
 
-export default freqContactsReducer;
+export default detailsReducer;

@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { getUsers } from './messages.utils';
+import { getUsers, getOpenUserMessages } from './messages.utils';
 
 const getMessages = state => state.messages;
 
@@ -11,4 +11,9 @@ export const selectMessages = createSelector(
 export const selectUsers = createSelector(
     [selectMessages],
     messages => getUsers(messages)
+)
+
+export const selectOpenUserMessages = user => createSelector(
+    [selectMessages],
+    messages => getOpenUserMessages(messages, user)
 )
