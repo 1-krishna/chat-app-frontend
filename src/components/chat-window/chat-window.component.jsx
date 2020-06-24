@@ -18,21 +18,21 @@ class ChatWindow extends React.Component {
     }
 
     componentDidMount() {
-        while (!this.fromUser) {
+        /*while (!this.fromUser) {
             let fromUserInput = prompt('Who are you?')
             this.fromUser = fromUserInput;
-        }
+        }*/
 
         while (!this.toUser) {
             let toUserInput = prompt('To whom are you sending?')
             this.toUser = toUserInput;
         }
         this.socket = io('http://localhost:4000');
-        this.socket.on(`${this.fromUser}`, incomingMessage => {
+        this.socket.on(`${this.props.fromUser}`, incomingMessage => {
             console.log(incomingMessage)
             this.props.setMessages([...this.props.allMessages, incomingMessage])
         })
-        this.props.setLoggedUser(this.fromUser)
+        //this.props.setLoggedUser(this.fromUser)
         this.props.setCurrentlyOpenUser(this.toUser);
     }
 
