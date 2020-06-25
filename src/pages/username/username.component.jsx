@@ -23,13 +23,15 @@ class Username extends React.Component {
         const { username } = this.state
         return (
             <Form onSubmit={this.handleSubmit}>
-                <Form.Field required>
-                    <label>Username</label>
-                    <Input name='username'
-                        value={username}
-                        onChange={this.handleChange}
-                        placeholder='Enter username' />
-                </Form.Field>
+                <Form.Group inline>
+                    <Form.Field required width={12}>
+                        <Input name='username'
+                            value={username}
+                            onChange={this.handleChange}
+                            placeholder='Enter username' />
+                    </Form.Field>
+                    <Form.Button floated='right' width={4}>Save</Form.Button>
+                </Form.Group>
             </Form>
         )
     }
